@@ -1,0 +1,316 @@
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MQTT</title>
+
+  <!-- Added the Bootstrap CDN -->
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+    integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+  <!-- jQuery library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+  <!-- Latest compiled JavaScript -->
+
+  <link rel="stylesheet" href="index.css">
+</head>
+
+<br>
+<br>
+<br>
+
+<body>
+  <h3 style="margin-left: 3%; ">
+    MQTT over Web Socket.
+
+  </h3>
+  <br>
+  <br>
+
+
+  <div class="container">
+ 
+    <div class="card-deck">
+
+      <!-- BROKER -->
+      <div class="card cardbroker">
+        <h7 class="card-header">Broker</h7>
+        <div class="card-body">
+          <h6 class="card-title">Address:</h6>
+          <input type="text" style="width: 100%;" class="inputconnect"><br><br>
+          <a class="btn btn-primary" id="connectbtn">Connect</a><br><br>
+          <h6 class="card-title">Status:</h6>
+          <input type="text" style="width: 100%;" placeholder="Press Connect " class="currentstatus"
+            style="color: black;"><br><br>
+        </div>
+
+
+        <div class="card" style="border-color:white; top: -43px;">
+          <h7 class="card-header" style="background-color: rgb(202, 235, 245); color: rgb(85, 86, 87);">Incoming
+            Messages
+          </h7>
+
+          <table class=" table tableforbroker">
+            <thead>
+              <tr>
+                <th scope="col">Topic</th>
+                <th scope="col">Payload</th>
+                <th scope="col">Time Stamp</th>
+
+              </tr>
+            </thead>
+            <tbody>
+
+            </tbody>
+          </table>
+
+
+        </div>
+
+      </div>
+
+      <!-- END OF BROKER -->
+
+
+
+      <!-- START OF PUBLISH -->
+
+      <div class="card cardpublish">
+        <h7 class="card-header">Publish</h7>
+        <div class="card-body">
+          <h6 class="card-title">Topic:</h6>
+          <input type="text" style="width: 100%;" class="publishtopicinput"><br><br>
+          <h6 class="card-title">Payload:</h6>
+          <input type="text" style="width: 100%;" class="publishpayloadinput"><br><br>
+          <a class="btn btn-primary" id="publishedclicked">Publish</a><br><br>
+
+        </div>
+
+        <div class="card" style=" border-color:white; top: -43px;">
+          <h7 class="card-header" style="background-color: rgb(202, 235, 245); color: rgb(85, 86, 87); ">Published
+            Messages
+          </h7>
+
+          <table class="table tableforpublish">
+            <thead>
+              <tr>
+                <th scope="col">Topic</th>
+                <th scope="col">Payload</th>
+                <th scope="col">Time Stamp</th>
+
+              </tr>
+            </thead>
+
+          </table>
+
+        </div>
+      </div>
+
+      <!-- END OF PUBLISHED -->
+
+
+
+
+      <!-- START OF SUBSCRIBED -->
+
+      <div class="card cardsubscribed">
+        <h7 class="card-header">Subscribe</h7>
+        <div class="card-body">
+          <h6 class="card-title">Topic:</h6>
+          <input type="text" style="width: 100%;" class="subscribetopic"><br><br>
+
+          <a class="btn btn-primary" id="subscribeclicked">Subscribe</a><br><br>
+
+        </div>
+
+
+        <div class="card" style=" border-color:white; top: -43px;">
+          <h7 class="card-header" style="background-color: rgb(202, 235, 245); color: rgb(85, 86, 87);">Subscribed
+            Messages
+          </h7>
+
+          <table class="table tableforsubscribe">
+            <thead>
+              <tr>
+                <th scope="col">Topic</th>
+
+                <th scope="col">Time Stamp</th>
+
+              </tr>
+            </thead>
+            <tbody>
+            </tbody>
+          </table>
+
+        </div>
+
+      </div>
+
+      <!-- END OF SUBSCRIBED -->
+
+
+
+
+    </div>
+
+
+  </div>
+  </div>
+
+
+</body>
+<script src="./browserMqtt.js"></script>
+<script src="./index.js"></script>
+
+</html>
+
+<script>
+
+  $(document).ready(function () {
+
+    $(".inputconnect").val("wss://test.mosquitto.org:8081/mqtt");
+
+    $("#connectbtn").on("click", function () {
+      var connection = false;
+
+
+
+      var connect = $(".inputconnect").val()
+
+      if (connect == "") {
+        alert("Input Address!")
+
+      }
+      else if (connect != "wss://test.mosquitto.org:8081/mqtt") {
+
+      }
+      else if (connect == "wss://test.mosquitto.org:8081/mqtt") {
+
+        var client = mqtt.connect('wss://test.mosquitto.org:8081/mqtt')
+        // var client  = mqtt.connect({ host:'mqtt.eclipse.org/mqtt', port: 443})
+        // or
+        // var client  = mqtt.connect('wss://mqtt.eclipse.org:443/mqtt')
+
+        client.on('connect', function () {
+          console.log('connected')
+
+        })
+
+
+
+
+
+
+
+
+
+
+
+        var connect = $(".currentstatus").val("Connecting..")
+
+
+        setTimeout(function () {
+          $(".currentstatus").val("Connected!")
+
+
+        }, 2000)
+        var topic = $(".publishtopicinput").val()
+        var message = $(".publishtopicinput").val()
+        client.on('message', function (topic, message) {
+          var time = new Date(Date.now())
+          let dateObj = new Date(time);
+
+          $(".tableforbroker").append("<tr><td>" + topic + "</td><td>" + message + "</td><td>" + dateObj.toDateString() + "" + dateObj.toLocaleTimeString() + "</td></tr>");
+
+        })
+
+      }
+
+
+
+
+      // WHEN SUBSCRIBE IS  BEING CLICKED
+
+      $("#subscribeclicked").on("click", function () {
+        client.subscribe($(".subscribetopic").val())
+
+        var getSubscribeTopic = $(".subscribetopic").val()
+
+        if (getSubscribeTopic == "") {
+          alert("Input Subscribe Topic!");
+        }
+        else {
+          var time = new Date(Date.now())
+          let dateObj = new Date(time);
+
+          $(".tableforsubscribe").append("<tr><td>" + $(".subscribetopic").val() + "</td><td>" + dateObj.toDateString() + "" + dateObj.toLocaleTimeString() + "</td></tr>");
+
+        }
+
+
+
+        // var getPublishTopic=$(".publishtopicinput").val()
+
+
+      })
+
+      // WHEN PUBLISH IS BEING CLICKED!
+
+      $("#publishedclicked").on("click", function () {
+        client.publish($(".publishtopicinput").val(), $(".publishpayloadinput").val())
+
+        var getPublishTopic = $(".publishtopicinput").val()
+        var getPayloadTopic = $(".publishpayloadinput").val()
+
+        if (getPublishTopic == "") {
+          alert("Input Topic!");
+
+        }
+        else if (getPayloadTopic == "") {
+          alert("Input Payload!");
+
+        }
+
+        else {
+
+          var time = new Date(Date.now())
+          let dateObj = new Date(time);
+          var getSubscribeTopic = $(".subscribetopic").val()
+
+          $(".tableforpublish").append("<tr><td>" + $(".publishtopicinput").val() + "</td><td>" + $(".publishpayloadinput").val() + "</td><td>" + dateObj.toDateString() + "" + dateObj.toLocaleTimeString() + "</td></tr>");
+
+          if (getPublishTopic == getSubscribeTopic) {
+
+
+
+          }
+
+
+        }
+
+      })
+
+
+
+
+    })
+
+
+
+
+
+  });
+
+
+</script>
+
+
+
+<!-- var time =new Date(Date.now())
+let dateObj = new Date(time);
+$(".tableforsubscribe").append("<tr><td>"+$(".subscribetopic").val() +"</td><td>"+ dateObj.toDateString() +" "+ dateObj.toLocaleTimeString()+"</td></tr>"); -->
